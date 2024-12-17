@@ -38,12 +38,23 @@ jobs:
 
           echo "re-encoded files to base64 ✅"
 
-      # step 6: upload base64 files as artifacts
-      - name: upload base64-encoded files
+      # step 6: package files into a zip
+      - name: package all files into zip
+        run: |
+          mkdir certs_output
+          cp Certificates.p12 certs_output/
+          cp mobileprovision.mobileprovision certs_output/
+          cp ExportOptions.plist certs_output/
+          cp cert_base64.txt certs_output/
+          cp mobile_pp_base64.txt certs_output/
+          cp export_opts_base64.txt certs_output/
+
+          zip -r certificates_bundle.zip certs_output
+          echo "packaged all files into certificates_bundle.zip ✅"
+
+      # step 7: upload zip artifact
+      - name: upload certificates bundle
         uses: actions/upload-artifact@v4
         with:
-          name: base64-encoded-certificates
-          path: |
-            cert_base64.txt
-            mobile_pp_base64.txt
-            export_opts_base64.txt
+          name: certificates-bundle
+          path: certificates_bundle.zip
